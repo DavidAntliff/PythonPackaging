@@ -75,19 +75,21 @@ Consider a new project called "PythonPackaging" that has some command-line scrip
 
           # ...
 
-Developers, who have cloned this repository, install this package for editing with:
+A fresh virtualenv is recommended for each project.
 
-    pip install --editable git@github.com:Group/Project.git#egg=abcde --src .
+Developers, who have cloned this repository, install this package into their virtualenv for editing with:
 
-This creates a new subdirectory called `abcde` that contains the source files for this project. Files can be edited here. Any dependencies will be fetched by `pip`.
+    pip install --editable git+git@github.com:DavidAntliff/PythonPackaging.git#egg=PythonPackaging --process-dependency-links --src .
+
+Any dependencies will be fetched by `pip`.
+
+This creates a new subdirectory called `pythonpackaging` that contains the source files for this project. Files can be edited here.
 
 Developer dependencies (not required by users) can be manually installed with:
 
     pip install -r requirements.txt
 
-A fresh virtualenv is recommended for each project.
-
-`requirements.txt` can also specify a URL for a downloadable dependency that will also be editable:
+If required, `requirements.txt` can also specify a URL for a downloadable dependency that will also be editable:
 
     -e git+git@github.com:DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1
 
