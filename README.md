@@ -35,12 +35,12 @@ in the user's environment.
 
 ## Example
 
-Consider a new project called "abcde" that has some command-line scripts, a few packages, and a dependency on a first-party package.
+Consider a new project called "PythonPackaging" that has some command-line scripts, a few packages, and a dependency on a first-party package.
 
     /
         bin/               # contains application scripts directly invoked by a user of this package
             do_something.py
-            do_more.py
+            do_something_more.py
 
         packageA/          # an internal package that contains a module called 'moduleA'
             __init__.py
@@ -48,16 +48,13 @@ Consider a new project called "abcde" that has some command-line scripts, a few 
 
         packageB/          # a second internal package - this one can be 'invoked' (see below)
             __init__.py
+            moduleB.py
             __main__.py
-
-        docs/              # documentation, perhaps in .rst or .md format
-            source/
-                UserGuide.rst
 
         tests/             # contains unit test scripts
             __init__.py
-            test_abcde.py
             test_packageA_moduleA.py
+            test_packageB_moduleB.py
 
         README.md
         setup.py           # packaging information file
@@ -65,14 +62,14 @@ Consider a new project called "abcde" that has some command-line scripts, a few 
 
 `setup.py` contains rules to ensure command-line programs are available after installation:
 
-    setup(name="abcde",
+    setup(name="PythonPackaging",
           # ...
 
-          scripts = ['bin/do_something.py', 'bin/do_more.py'],
+          scripts = ['bin/do_something.py', 'bin/do_something_more.py'],
 
           entry_points={
               'console_scripts': [
-                  'abcde = packageB.__main__:main',
+                  'PythonPackaging = packageB.__main__:main',
               ],
           },
 
@@ -92,7 +89,7 @@ A fresh virtualenv is recommended for each project.
 
 `requirements.txt` can also specify a URL for a downloadable dependency that will also be editable:
 
-    -e git@github.com:Group/MyDep.git@1.2.3#egg=mydep-1.2.3
+    -e git+git@github.com:DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1
 
 ## Dependency Links
 
@@ -104,17 +101,24 @@ Requirements:
 
 In the parent's `setup.py`, the `install_requires` list specifies the package names and versions required by this project.
 The `dependency_links` list provides the source URLs for each dependency.
-Note the `#egg=mydep-1.2.3` which is used to tie the URL back to the `install_requires` list.
-Note also `@1.2.3` which picks a particular tagged commit from the git repository.
+Note the `#egg=PythonPackagingDependency-0.0.1` which is used to tie the URL back to the `install_requires` list.
+Note also `@0.0.1` which picks a particular tagged commit from the git repository.
 Typically, the tag will match the version number, but this is not strictly necessary.
 
     install_requires=[
-        "mydep==1.2.3",
+        "PythonPackagingDependency==0.0.1",
     ],
     dependency_links=[
-        "git+ssh://git@nz-swbuild42:2222/project/mydep.git@1.2.3#egg=mydep-1.2.3",
+        "git+https://github.com/DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1",
     ],
 
 Then when installing the package via `pip`, the option `--process-dependency-links` is required, otherwise the URLs in the `dependency_links` list are ignored:
 
-   pip install git@github.com:Group/Project.git --process-dependency-links
+    pip install git@github.com:Group/Project.git --process-dependency-links
+
+## Limitations
+
+If using [pyenv](https://github.com/pyenv/pyenv), any scripts installed via the `scripts` field in `setup.py` will be placed
+into the relevant python version or virtualenv's bin directory, however the shell's PATH will not have this directory included,
+so such scripts will not be found in the PATH search. This does not affect the `console_scripts` feature.
+
