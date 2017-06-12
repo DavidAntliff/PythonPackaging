@@ -91,7 +91,23 @@ information based on package name and version (`install_requires`) and URLs that
 
           # ...
 
+## Developer Workflow
+
+A virtualenv is recommended.
+
+Assuming developers, not users, wish to hack code on a project, the `pip --editable` option can be used to
+install the current working directory as a package in a way that allows code to be edited and immediately
+reflected in the installed package.
+
+    pip install --editable --process-dependency-links .
+
+This will install any dependencies into the virtualenv, allowing the scripts and modules to be used in-situ.  
+
 ## Installation
+
+Upgrade your `pip`!
+
+    pip install --upgrade pip
 
 ### Installation for Users
 
