@@ -115,7 +115,7 @@ Users may not be familiar with virtualenv however it is still recommended.
 
 Users install this package into their virtualenv for importing with:
 
-    pip install git+https://@github.com/DavidAntliff/PythonPackaging.git --process-dependency-links
+    pip install git+https://github.com/DavidAntliff/PythonPackaging.git --process-dependency-links
 
 Any dependencies will be fetched by `pip`.
 
