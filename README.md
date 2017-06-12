@@ -35,7 +35,7 @@ in the user's environment.
 
 ## Example
 
-Consider a new project called "PythonPackaging" that has some command-line scripts, a few packages, and a dependency on a first-party package.
+Consider a new project called "PythonPackaging" that has some command-line scripts, a few packages, and a dependency on a first-party package called [PythonPackagingDependency](https://github.com/DavidAntliff/PythonPackagingDependency).
 
     /
         bin/               # contains application scripts directly invoked by a user of this package
@@ -60,7 +60,23 @@ Consider a new project called "PythonPackaging" that has some command-line scrip
         setup.py           # packaging information file
         requirements.txt   # developer dependencies
 
-`setup.py` contains rules to ensure command-line programs are available after installation:
+[`setup.py`](https://github.com/DavidAntliff/PythonPackaging/blob/master/setup.py) contains rules to provide dependency 
+information based on package name and version (`install_requires`) and URLs that can be used to satisfy such dependencies
+ (`dependency_links`):
+
+    setup(name="PythonPackaging",
+        # ...
+
+        install_requires=[
+            "PythonPackagingDependency>=0.0.1",
+        ],
+        dependency_links=[
+            "git+https://github.com/DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1",
+        ],
+
+        # ...
+
+`setup.py` also contains rules to ensure command-line programs are available after installation:
 
     setup(name="PythonPackaging",
           # ...
@@ -75,11 +91,17 @@ Consider a new project called "PythonPackaging" that has some command-line scrip
 
           # ...
 
+### Installation for Developers
+
 A fresh virtualenv is recommended for each project.
 
-Developers, who have cloned this repository, install this package into their virtualenv for editing with:
+Developers install this package into their virtualenv for editing with:
 
     pip install --editable git+git@github.com:DavidAntliff/PythonPackaging.git#egg=PythonPackaging --process-dependency-links --src .
+
+Or using HTTPS:
+
+    pip install --editable git+https://github.com/DavidAntliff/PythonPackaging.git#egg=PythonPackaging  --process-dependency-links --src .
 
 Any dependencies will be fetched by `pip`.
 
@@ -92,6 +114,18 @@ Developer dependencies (not required by users) can be manually installed with:
 If required, `requirements.txt` can also specify a URL for a downloadable dependency that will also be editable:
 
     -e git+git@github.com:DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1
+
+### Installation for Users
+
+Users may not be familiar with virtualenv however it is still recommended.
+
+Users install this package into their virtualenv for importing with:
+
+    pip install git+https://@github.com/DavidAntliff/PythonPackaging.git --process-dependency-links
+
+Any dependencies will be fetched by `pip`.
+
+No source directory is created, so the package cannot be edited in this way.
 
 ## Dependency Links
 
