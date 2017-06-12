@@ -62,7 +62,7 @@ Consider a new project called "PythonPackaging" that has some command-line scrip
 
 [`setup.py`](https://github.com/DavidAntliff/PythonPackaging/blob/master/setup.py) contains rules to provide dependency 
 information based on package name and version (`install_requires`) and URLs that can be used to satisfy such dependencies
- (`dependency_links`):
+ (`dependency_links`). See [Dependency Links](https://github.com/DavidAntliff/PythonPackaging#dependency-links) below for more info.
 
     setup(name="PythonPackaging",
         # ...
@@ -91,6 +91,20 @@ information based on package name and version (`install_requires`) and URLs that
 
           # ...
 
+## Installation
+
+### Installation for Users
+
+Users may not be familiar with virtualenv however it is still recommended.
+
+Users install this package into their virtualenv for importing with:
+
+    pip install git+https://@github.com/DavidAntliff/PythonPackaging.git --process-dependency-links
+
+Any dependencies will be fetched by `pip`.
+
+No source directory is created, so the package cannot be edited in this way.
+
 ### Installation for Developers
 
 A fresh virtualenv is recommended for each project.
@@ -115,21 +129,9 @@ If required, `requirements.txt` can also specify a URL for a downloadable depend
 
     -e git+git@github.com:DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1
 
-### Installation for Users
-
-Users may not be familiar with virtualenv however it is still recommended.
-
-Users install this package into their virtualenv for importing with:
-
-    pip install git+https://@github.com/DavidAntliff/PythonPackaging.git --process-dependency-links
-
-Any dependencies will be fetched by `pip`.
-
-No source directory is created, so the package cannot be edited in this way.
-
 ## Dependency Links
 
-Requirements:
+General requirements:
 
 1. The parent project will specify a required version number for the subordinate project, and
 1. The subordinate project must have a `setup.py` that specifies this version number, and
