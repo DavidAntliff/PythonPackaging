@@ -176,3 +176,8 @@ If using [pyenv](https://github.com/pyenv/pyenv), any scripts installed via the 
 into the relevant python version or virtualenv's bin directory, however the shell's PATH will not have this directory included,
 so such scripts will not be found in the PATH search. This does not affect the `console_scripts` feature.
 
+## References
+
+ * [Python Packaging User Guide](https://packaging.python.org/)
+ * [install_requires vs Requirements files](https://packaging.python.org/requirements/)
+ * [setup.py vs requirements.txt](https://caremad.io/posts/2013/07/setup-vs-requirement/)
