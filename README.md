@@ -181,3 +181,5 @@ so such scripts will not be found in the PATH search. This does not affect the `
  * [Python Packaging User Guide](https://packaging.python.org/)
  * [install_requires vs Requirements files](https://packaging.python.org/requirements/)
  * [setup.py vs requirements.txt](https://caremad.io/posts/2013/07/setup-vs-requirement/)
+ * [The Package Dependency Blues](https://blog.miguelgrinberg.com/post/the-package-dependency-blues)
+
