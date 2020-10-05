@@ -2,7 +2,7 @@
 
 ## Update October 2020
 
-While revisiting this repository I found that `--process-dependency-links` is no longer working with 20.2.3. I'm not sure which version of pip last supported this - possibly 18.1.
+While revisiting this repository I found that `--process-dependency-links` is no longer working with `pip` 20.2.3. I'm not sure which version of pip last supported this - possibly 18.1.
 
 Apparently the correct practice now is to remove the `dependency_links=` section from `setup.py` and instead use the [PEP 508](https://www.python.org/dev/peps/pep-0508/) URLs instead:
 
