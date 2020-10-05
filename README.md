@@ -1,5 +1,21 @@
 # Python Packaging
 
+## Update October 2020
+
+While revisiting this repository I found that `--process-dependency-links` is no longer working with 20.2.3. I'm not sure which version of pip last supported this - possibly 18.1.
+
+Apparently the correct practice now is to remove the `dependency_links=` section from `setup.py` and instead use the [PEP 508](https://www.python.org/dev/peps/pep-0508/) URLs instead:
+
+```python
+    install_requires=[
+        'somepackage=1.2.0',
+        'repo @ https://github.com/user/archive/master.zip#egg=repo-1.0.0',
+        # ...
+    ],
+```
+
+Now the package can be installed by `setup.py` without the need for `--process-dependency-links`. The rest of this document has been updated to reflect this new information.
+
 ## Issues
 
  * Source often needs to be present to run a program.
@@ -61,17 +77,13 @@ Consider a new project called "PythonPackaging" that has some command-line scrip
         requirements.txt   # developer dependencies
 
 [`setup.py`](https://github.com/DavidAntliff/PythonPackaging/blob/master/setup.py) contains rules to provide dependency 
-information based on package name and version (`install_requires`) and URLs that can be used to satisfy such dependencies
- (`dependency_links`). See [Dependency Links](https://github.com/DavidAntliff/PythonPackaging#dependency-links) below for more info.
+information based on package name and version (`install_requires`) and [PEP 508](https://www.python.org/dev/peps/pep-0508/) URLs that can be used to satisfy such dependencies.
 
     setup(name="PythonPackaging",
         # ...
 
         install_requires=[
-            "PythonPackagingDependency>=0.0.1",
-        ],
-        dependency_links=[
-            "git+https://github.com/DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1",
+            "PythonPackagingDependency @ git+https://github.com/DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1",
         ],
 
         # ...
@@ -91,6 +103,10 @@ information based on package name and version (`install_requires`) and URLs that
 
           # ...
 
+The `scripts` items will result in `pip` placing copies of each `.py` script into  `${VIRTUAL_ENV}/bin/`.
+
+The `entry_points` item will result in `pip` placing a wrapper for `packageB.__main__` as `${VIRTUAL_ENV}/bin/PythonPackaging`.
+
 ## Developer Workflow
 
 A virtualenv is recommended.
@@ -99,7 +115,7 @@ Assuming developers, not users, wish to hack code on a project, the `pip --edita
 install the current working directory as a package in a way that allows code to be edited and immediately
 reflected in the installed package.
 
-    pip install --editable --process-dependency-links .
+    pip install --editable .
 
 This will install any dependencies into the virtualenv, allowing the scripts and modules to be used in-situ.  
 
@@ -109,13 +125,15 @@ Upgrade your `pip`!
 
     pip install --upgrade pip
 
+This guide assumes pip version 18.1 or greater. It was last tested with pip 20.2.3.
+
 ### Installation for Users
 
 Users may not be familiar with virtualenv however it is still recommended.
 
 Users install this package into their virtualenv for importing with:
 
-    pip install git+https://github.com/DavidAntliff/PythonPackaging.git --process-dependency-links
+    pip install git+https://github.com/DavidAntliff/PythonPackaging.git
 
 Any dependencies will be fetched by `pip`.
 
@@ -125,13 +143,13 @@ No source directory is created, so the package cannot be edited in this way.
 
 A fresh virtualenv is recommended for each project.
 
-Developers install this package into their virtualenv for editing with:
+Developers download and install this package into their virtualenv for editing with:
 
-    pip install --editable git+git@github.com:DavidAntliff/PythonPackaging.git#egg=PythonPackaging --process-dependency-links --src .
+    pip install --editable git+git@github.com:DavidAntliff/PythonPackaging.git#egg=PythonPackaging --src .
 
 Or using HTTPS:
 
-    pip install --editable git+https://github.com/DavidAntliff/PythonPackaging.git#egg=PythonPackaging  --process-dependency-links --src .
+    pip install --editable git+https://github.com/DavidAntliff/PythonPackaging.git#egg=PythonPackaging --src .
 
 Any dependencies will be fetched by `pip`.
 
@@ -145,30 +163,25 @@ If required, `requirements.txt` can also specify a URL for a downloadable depend
 
     -e git+git@github.com:DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1
 
-## Dependency Links
+## PEP 508 URLs
 
-General requirements:
+Dependencies can be specified using a special URL syntax. If a dependency exists in its own git repository, it can be automatically brought in by `pip`.
+
+General requirements for dependency git repositories:
 
 1. The parent project will specify a required version number for the subordinate project, and
 1. The subordinate project must have a `setup.py` that specifies this version number, and
 1. The subordinate project's repository must have a tag such that the tagged `setup.py` holds this version number.
 
-In the parent's `setup.py`, the `install_requires` list specifies the package names and versions required by this project.
-The `dependency_links` list provides the source URLs for each dependency.
-Note the `#egg=PythonPackagingDependency-0.0.1` which is used to tie the URL back to the `install_requires` list.
-Note also `@0.0.1` which picks a particular tagged commit from the git repository.
+In the parent's `setup.py`, the `install_requires` list specifies the package names, versions and URLs required by this project.
+Note `@0.0.1` picks a particular tagged commit from the git repository.
 Typically, the tag will match the version number, but this is not strictly necessary.
 
     install_requires=[
-        "PythonPackagingDependency==0.0.1",
-    ],
-    dependency_links=[
-        "git+https://github.com/DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1",
+        "PythonPackagingDependency @ git+https://github.com/DavidAntliff/PythonPackagingDependency@0.0.1#egg=PythonPackagingDependency-0.0.1",
     ],
 
-Then when installing the package via `pip`, the option `--process-dependency-links` is required, otherwise the URLs in the `dependency_links` list are ignored:
-
-    pip install git@github.com:Group/Project.git --process-dependency-links
+Since pip 18.1, the option `--process-dependency-links` is no longer required.
 
 ## Limitations
 
@@ -182,4 +195,5 @@ so such scripts will not be found in the PATH search. This does not affect the `
  * [install_requires vs Requirements files](https://packaging.python.org/requirements/)
  * [setup.py vs requirements.txt](https://caremad.io/posts/2013/07/setup-vs-requirement/)
  * [The Package Dependency Blues](https://blog.miguelgrinberg.com/post/the-package-dependency-blues)
-
+ * [PEP 508 - Dependency specification for Python Software Packages](https://www.python.org/dev/peps/pep-0508/)
+ * [Stack Overflow - pip ignores dependency links in setup.py](https://stackoverflow.com/a/54216163)
